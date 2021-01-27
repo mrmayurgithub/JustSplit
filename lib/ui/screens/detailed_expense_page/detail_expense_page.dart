@@ -2,7 +2,8 @@ import 'package:contri_app/global/global_helpers.dart';
 import 'package:contri_app/global/logger.dart';
 import 'package:contri_app/global/storage_constants.dart';
 import 'package:contri_app/ui/components/custom_appBar.dart';
-import 'package:contri_app/ui/components/expense_dialog.dart';
+import 'package:contri_app/ui/components/general_dialog.dart';
+import 'package:contri_app/ui/components/friendOptionsPopButton.dart';
 import 'package:contri_app/ui/components/progressIndicator.dart';
 import 'package:contri_app/ui/components/scren_arguments.dart';
 import 'package:contri_app/ui/constants.dart';
@@ -26,7 +27,7 @@ class DetailExpPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => DetailexpBloc()
         ..add(DetailExpPageRequested(
-            argObject: args, isGroupExpDetail: args.group != null)),
+            argObject: args, isGroupExpDetail: args.group != null),),
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -60,10 +61,11 @@ class DetailExpMainBody extends StatelessWidget {
   DetailExpMainBody({this.arguments});
   @override
   Widget build(BuildContext context) {
-    print(screenHeight);
     return BlocConsumer<DetailexpBloc, DetailexpState>(
         listener: (context, state) {
       if (state is DetailExpFailure) {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
         context.showSnackBar(state.message);
       } else if (state is DetailExpLoading) {
         showProgress(context);
@@ -80,6 +82,9 @@ class DetailExpMainBody extends StatelessWidget {
           HomePage.id,
           arguments: ScreenArguments(homeIndex: 1),
         );
+      } else if (state is DeleteFriendSuccess) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        Navigator.of(context).pushReplacementNamed(HomePage.id);
       }
     }, builder: (context, state) {
       if (state is DetailexpInitialState) {
@@ -101,6 +106,26 @@ class DetailExpMainBody extends StatelessWidget {
                     Navigator.of(context).pop();
                   },
                 ),
+                actions: [
+                  arguments.friend != null
+                      ? FriendsOptionsPopButton(
+                          friendId: arguments.friend.id,
+                          friendName:
+                              "${arguments.friend.friend.firstName + " " + arguments.friend.friend.lastName}",
+                          onRemove: () {
+                            BlocProvider.of<DetailexpBloc>(context).add(
+                              DeleteFriend(friendId: arguments.friend.id),
+                            );
+                          },
+                          onReminder: () {
+                            // TODO: Add the send reminder functionality
+                            context.showSnackBar(
+                              "This recipe is being cooked. Please wait for the developer to cook this recipe.",
+                            );
+                          },
+                        )
+                      : Container(),
+                ],
               )
             ],
             body: Container(
@@ -232,7 +257,7 @@ class DetailExpUpperBody extends StatelessWidget {
                 onPressed: () {
                   showDialog(
                     context: context,
-                    builder: (context) => ExpenseDialog(
+                    builder: (dialogContext) => GeneralDialog(
                       title:
                           state.isGroupExpDetail ? "Delete Group" : "Settle Up",
                       onPressed: () async {
@@ -248,7 +273,7 @@ class DetailExpUpperBody extends StatelessWidget {
                           ? "Are you sure you want to delete the ${state.name} group? This will delete all the expenses linked to the group"
                           : "Are you sure you want to settle up all non-group expenses with ${state.name}? You cannot restore them later",
                       proceedButtonText:
-                          state.isGroupExpDetail ? "Delete Group" : "Settle Up",
+                          state.isGroupExpDetail ? "DELETE GROUP" : "SETTLE UP",
                     ),
                   );
                 },

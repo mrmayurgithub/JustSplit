@@ -1,4 +1,4 @@
-import 'package:contri_app/api/functions/messaging_functions.dart';
+import 'package:contri_app/sdk/functions/messaging_functions.dart';
 import 'package:contri_app/global/global_helpers.dart';
 import 'package:contri_app/ui/components/blueButton.dart';
 import 'package:contri_app/ui/components/currency_helpers.dart';
@@ -197,7 +197,7 @@ class _LoginFormState extends State<LoginForm> {
     final _formKey = GlobalKey<FormState>();
     showDialog(
       context: context,
-      builder: (context) => PassResetMailDialog(
+      builder: (dialogContext) => PassResetMailDialog(
         formKey: _formKey,
         emailController: _emailController,
         onPressed: () {

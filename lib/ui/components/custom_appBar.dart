@@ -6,12 +6,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double expandableHeight;
   final Widget leading;
   final Widget title;
+  final List<Widget> actions;
   CustomAppBar({
     @required this.height,
     @required this.expandableHeight,
     @required this.child,
     this.leading,
     this.title,
+    this.actions,
   });
 
   @override
@@ -24,6 +26,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       expandedHeight: expandableHeight,
       leading: leading,
+      actions: actions,
       title: title,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       flexibleSpace: FlexibleSpaceBar(

@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:contri_app/api/functions/expenses_functions.dart';
-import 'package:contri_app/api/functions/group_functions.dart';
+import 'package:contri_app/sdk/functions/expenses_functions.dart';
+import 'package:contri_app/sdk/functions/friends_functions.dart';
+import 'package:contri_app/sdk/functions/group_functions.dart';
 import 'package:contri_app/global/global_helpers.dart';
 import 'package:contri_app/global/storage_constants.dart';
 import 'package:contri_app/ui/components/customTile.dart';
@@ -16,13 +17,15 @@ part 'detailexp_state.dart';
 
 class DetailexpBloc extends Bloc<DetailexpEvent, DetailexpState> {
   DetailexpBloc()
-      : super(DetailexpInitialState(
-          pictureUrl: " ",
-          name: " ",
-          isGroupExpDetail: false,
-          netBalance: 0.0,
-          widgetList: [],
-        ));
+      : super(
+          DetailexpInitialState(
+            pictureUrl: " ",
+            name: " ",
+            isGroupExpDetail: false,
+            netBalance: 0.0,
+            widgetList: [],
+          ),
+        );
 
   @override
   Stream<DetailexpState> mapEventToState(
@@ -38,7 +41,7 @@ class DetailexpBloc extends Bloc<DetailexpEvent, DetailexpState> {
               .where((element) => element.groupId == event.argObject.group.id)
               .toList();
           _expenses.sort((a, b) =>
-              DateTime.parse(a.date).compareTo(DateTime.parse(b.date)));
+              DateTime.parse(a.date).compareTo(DateTime.parse(b.date)),);
 
           final _revList = _expenses.reversed.toList();
 
@@ -91,7 +94,7 @@ class DetailexpBloc extends Bloc<DetailexpEvent, DetailexpState> {
               )
               .toList();
           _expenses.sort((a, b) =>
-              DateTime.parse(a.date).compareTo(DateTime.parse(b.date)));
+              DateTime.parse(a.date).compareTo(DateTime.parse(b.date)),);
           final _revList = _expenses.reversed.toList();
           for (var _exp in _revList) {
             _netBalance += _exp.owedShare;
@@ -133,7 +136,7 @@ class DetailexpBloc extends Bloc<DetailexpEvent, DetailexpState> {
                         photoUrl: _exp.pictureUrl ?? "${expenseAvatars[0]}",
                         argObject: ScreenArguments(expense: _exp),
                         subTitle:
-                            "By ${event.argObject.friend.friend.firstName}"),
+                            "By ${event.argObject.friend.friend.firstName}",),
                   );
                 }
               }
@@ -196,6 +199,11 @@ class DetailexpBloc extends Bloc<DetailexpEvent, DetailexpState> {
         await loadGroups();
         await loadExpenses();
         yield (DeleteGroupSuccess());
+      }
+      if (event is DeleteFriend) {
+        yield DetailExpLoading();
+        await FriendFunctions.deleteFriend(id: event.friendId);
+        yield DeleteFriendSuccess();
       }
     } on PlatformException catch (e) {
       yield (DetailExpFailure(message: "Error: ${e.message}"));

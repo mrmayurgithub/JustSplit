@@ -11,7 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:contri_app/extensions/snackBar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-/// ITS PERSONAL COMMENTS PAGE. Just The API was made with comment as its name.
+/// ITS PERSONAL COMMENTS PAGE. Just The sdk was made with comment as its name.
 class NotesPage extends StatelessWidget {
   static const String id = "notes_page";
   // final _commentController = TextEditingController();
@@ -86,17 +86,17 @@ class NotesPageBody extends StatelessWidget {
                           onPressed: () {
                             showDialog(
                               context: context,
-                              builder: (context) => AddCommentsBox(
+                              builder: (dialogContext) => AddCommentsBox(
                                 onAddTap: () {
                                   if (!_formKey.currentState.validate()) return;
 
                                   BlocProvider.of<NotesBloc>(context).add(
                                       AddComment(
                                           comment: _commentController.text));
-                                  Navigator.of(context).pop();
+                                  Navigator.of(dialogContext).pop();
                                 },
                                 onCancelTap: () {
-                                  Navigator.of(context).pop();
+                                  Navigator.of(dialogContext).pop();
                                 },
                                 textController: _commentController,
                                 formKey: _formKey,
