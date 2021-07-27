@@ -7,6 +7,7 @@ import 'package:contri_app/ui/global/utils.dart';
 import 'package:contri_app/ui/screens/detailed_expense_page/detail_expense_page.dart';
 import 'package:contri_app/ui/screens/home_page/pages/groups_page/bloc/groups_bloc.dart';
 import 'package:contri_app/ui/screens/new_group_page/new_group_page.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:contri_app/extensions/snackBar.dart';
@@ -38,7 +39,7 @@ class GroupsMainBody extends StatelessWidget {
         if (state is GroupsLoaded) {
           return Scaffold(
             body: NestedScrollView(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 CustomAppBar(
                   height: screenHeight * 0.101181703, // 100
@@ -47,7 +48,7 @@ class GroupsMainBody extends StatelessWidget {
                 ),
               ],
               body: SmartRefresher(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 controller: _refreshController,
                 onRefresh: () async {
                   await initializeSdk;
@@ -55,34 +56,73 @@ class GroupsMainBody extends StatelessWidget {
                   _refreshController.refreshCompleted();
                 },
                 child: Container(
-                  padding: EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.only(top: 20),
                   margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
                   child: SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
-                        state.groupsList.length > 0
+                        state.groupsList.length + state.settledGroupsList.length > 0
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
-                                children: state.groupsList
-                                    .map(
-                                      (item) => Padding(
-                                        padding: EdgeInsets.only(bottom: 11),
+                                children: [
+                                    for (var tile in state.groupsList)
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 11),
                                         child: FlatButton(
-                                          padding: EdgeInsets.all(0.0),
+                                          padding: const EdgeInsets.all(0.0),
                                           onPressed: () {
                                             Navigator.of(context).pushNamed(
-                                                DetailExpPage.id,
-                                                arguments: ScreenArguments(
-                                                    group:
-                                                        item.argObject.group));
+                                              DetailExpPage.id,
+                                              arguments:
+                                                  ScreenArguments(group: tile.argObject.group),
+                                            );
                                           },
-                                          child: item,
+                                          child: tile,
                                         ),
                                       ),
-                                    )
-                                    .toList(),
-                              )
+                                    const SizedBox(height: 5.0),
+                                    ExpandablePanel(
+                                      header: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0,
+                                          vertical: 12.0,
+                                        ),
+                                        child: Text(
+                                          'Settled Groups',
+                                          style: Theme.of(context).textTheme.bodyText1,
+                                        ),
+                                      ),
+                                      expanded: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          for (var tile in state.settledGroupsList)
+                                            Padding(
+                                              padding: const EdgeInsets.only(bottom: 11),
+                                              child: FlatButton(
+                                                padding: const EdgeInsets.all(0.0),
+                                                onPressed: () {
+                                                  Navigator.of(context).pushNamed(
+                                                    DetailExpPage.id,
+                                                    arguments: ScreenArguments(
+                                                      group: tile.argObject.group,
+                                                    ),
+                                                  );
+                                                },
+                                                child: tile,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      theme: ExpandableThemeData(
+                                        headerAlignment: ExpandablePanelHeaderAlignment.center,
+                                        hasIcon: true,
+                                        useInkWell: false,
+                                        iconColor: Theme.of(context).primaryIconTheme.color,
+                                      ),
+                                    ),
+                                  ])
                             : Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,20 +135,16 @@ class GroupsMainBody extends StatelessWidget {
                                   SizedBox(height: screenHeight * 0.040236341),
                                   Text(
                                     "You don't have any groups yet!\n",
-                                    style:
-                                        Theme.of(context).textTheme.bodyText1,
+                                    style: Theme.of(context).textTheme.bodyText1,
                                   ),
                                   RichText(
                                     text: TextSpan(
                                       text: "Start adding here ",
-                                      style:
-                                          Theme.of(context).textTheme.bodyText1,
+                                      style: Theme.of(context).textTheme.bodyText1,
                                       children: [
                                         TextSpan(
                                           text: "👇",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6,
+                                          style: Theme.of(context).textTheme.headline6,
                                         ),
                                       ],
                                     ),

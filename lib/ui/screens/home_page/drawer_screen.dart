@@ -15,9 +15,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:in_app_review/in_app_review.dart';
 
 class DrawerScreen extends StatelessWidget {
+  const DrawerScreen({@required this.animationController}) : assert(animationController != null);
+
   final AnimationController animationController;
-  DrawerScreen({@required this.animationController})
-      : assert(animationController != null);
+
   @override
   Widget build(BuildContext context) {
     final _gradientColorList = Theme.of(context).brightness == Brightness.dark
@@ -36,8 +37,7 @@ class DrawerScreen extends StatelessWidget {
         gradient: LinearGradient(colors: _gradientColorList),
       ),
       child: Container(
-        margin: EdgeInsets.only(
-            left: screenWidth * 0.06, right: screenWidth * 0.425),
+        margin: EdgeInsets.only(left: screenWidth * 0.06, right: screenWidth * 0.425),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,8 +53,7 @@ class DrawerScreen extends StatelessWidget {
 
 class TopDrawer extends StatelessWidget {
   final AnimationController drawerAnimationController;
-  TopDrawer({@required this.drawerAnimationController})
-      : assert(drawerAnimationController != null);
+  TopDrawer({@required this.drawerAnimationController}) : assert(drawerAnimationController != null);
 
   final _analytics = FirebaseAnalytics();
   final _verticalGap = 0.00501817 * screenHeight;
@@ -109,8 +108,7 @@ class TopDrawer extends StatelessWidget {
           icon: "assets/icons/drawer_menu/ratings.svg",
           onTap: () async {
             final InAppReview _inAppReview = InAppReview.instance;
-            _inAppReview
-                .openStoreListing(); // TODO Add appstore id when available
+            _inAppReview.openStoreListing(); // TODO Add appstore id when available
 
             await _analytics.logEvent(name: "rate_app");
           },
@@ -123,8 +121,8 @@ class TopDrawer extends StatelessWidget {
             await _analytics.logEvent(name: "share_app");
             await FlutterShare.share(
               title: "JustSplit",
-              linkUrl:
-                  "https://play.google.com/store/apps/details?id=dot.studios.contri_app",
+              linkUrl: "https://play.google.com/store/apps/details?id=dot.studios.contri_app",
+              text: 'Manage your expenses hassle free. Download JustSplit now.'
             );
           },
         ),
@@ -162,6 +160,8 @@ class TopDrawer extends StatelessWidget {
 }
 
 class BottomDrawer extends StatelessWidget {
+  const BottomDrawer();
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -170,18 +170,18 @@ class BottomDrawer extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          "Made with ♡ in India",
+          "Made with ♥ in India",
           style: Theme.of(context).textTheme.headline2.copyWith(
                 fontSize: screenHeight * 0.013341804,
               ),
         ),
         Text(
-          "Copyright \u00A9 2020 Dot.Studios LLC",
+          "Copyright \u00A9 2021 Dot.Studios LLC",
           style: Theme.of(context).textTheme.headline2.copyWith(
                 fontSize: screenHeight * 0.013341804,
               ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           kAppVersion,
           style: Theme.of(context).textTheme.headline2.copyWith(
